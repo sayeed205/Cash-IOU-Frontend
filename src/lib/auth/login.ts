@@ -1,7 +1,7 @@
 import { loginErrRes, loginRes } from '@/types/auth';
-import { AuthSchema } from '../validation/auth';
+import { LoginSchema } from '../validation/auth';
 
-const login = async (authInfo: AuthSchema) => {
+const login = async (authInfo: LoginSchema) => {
     const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
