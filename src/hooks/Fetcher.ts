@@ -13,7 +13,7 @@ Fetcher.interceptors.response.use(
     (res) => res,
     (err) => {
         if (err.response.status === 401) {
-            console.log(err);
+            console.log('401');
         }
     }
 );
