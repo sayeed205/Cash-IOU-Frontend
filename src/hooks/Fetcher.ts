@@ -15,6 +15,7 @@ Fetcher.interceptors.response.use(
         if (err.response.status === 401) {
             console.log('401');
         }
+        return Promise.resolve(err.response);
     }
 );
 

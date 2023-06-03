@@ -27,6 +27,7 @@ const SignupFrom = ({ className, ...props }: UserAuthFormProps) => {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const onSubmit = async (data: SignupSchema) => {
         setIsLoading(true);
@@ -35,23 +36,19 @@ const SignupFrom = ({ className, ...props }: UserAuthFormProps) => {
             setIsLoading(false);
             toast({
                 title: 'Sign up failed',
-                description: res.error,
+                description: res.message,
                 variant: 'destructive',
             });
             return;
         }
 
-        if (res.data) {
-            const jwt = res.data.token;
-            window.localStorage.setItem('token', jwt);
-            setIsLoading(false);
-            toast({
-                title: 'Sign up successful',
-                description: 'Please verify you phone number after login',
-                variant: 'default',
-            });
-            router.push('/login');
-        }
+        setIsLoading(false);
+        toast({
+            title: 'Sign up successful',
+            description: 'Please verify you phone number after login',
+            variant: 'default',
+        });
+        router.push('/login');
     };
 
     return (
@@ -87,21 +84,35 @@ const SignupFrom = ({ className, ...props }: UserAuthFormProps) => {
                                 {errors.phone.message}
                             </p>
                         )}
-                        <Label className="sr-only" htmlFor="password">
-                            Password
-                        </Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            placeholder="Abcd@1234"
-                            disabled={isLoading}
-                            {...register('password')}
-                        />
-                        {errors?.password && (
-                            <p className="px-1 text-xs text-red-600">
-                                {errors.password.message}
-                            </p>
-                        )}
+                        <div className="relative">
+                            <Label className="sr-only" htmlFor="password">
+                                Password
+                            </Label>
+                            <Input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Abcd@1234"
+                                disabled={isLoading}
+                                {...register('password')}
+                            />
+                            {/* EYE toggle to show Password */}
+                            <div
+                                className="absolute top-0 bottom-0 right-0 flex items-center w-10 px-3 cursor-pointer text-muted-foreground"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <Icons.eyeOff />
+                                ) : (
+                                    <Icons.eye />
+                                )}
+                            </div>
+
+                            {errors?.password && (
+                                <p className="px-1 text-xs text-red-600">
+                                    {errors.password.message}
+                                </p>
+                            )}
+                        </div>
                         <Label className="sr-only" htmlFor="password">
                             Confirm Password
                         </Label>

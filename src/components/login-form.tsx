@@ -40,7 +40,6 @@ const LoginForm = ({ className, ...props }: UserAuthFormProps) => {
         });
         setIsLoading(false);
 
-        console.log(res);
         if (!res?.ok) {
             return toast({
                 title: 'Sign in failed',
