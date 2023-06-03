@@ -1,7 +1,7 @@
-import useFetcher from '@/hooks/Fetcher';
+import Fetcher from '@/hooks/Fetcher';
 
 const whoAmI = async (token: string) => {
-    const res = await useFetcher('/api/whoami', {
+    const res = await Fetcher('/api/whoami', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
