@@ -5,6 +5,8 @@ import {
     ChevronLeft,
     ChevronRight,
     CreditCard,
+    Eye,
+    EyeOff,
     File,
     FileText,
     HelpCircle,
@@ -50,6 +52,8 @@ export const Icons = {
     sun: SunMedium,
     moon: Moon,
     laptop: Laptop,
+    eye: Eye,
+    eyeOff: EyeOff,
     gitHub: ({ ...props }: LucideProps) => (
         <svg
             aria-hidden="true"

@@ -1,11 +1,11 @@
 'use client';
 
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import login from '@/lib/auth/login';
 import { cn } from '@/lib/utils';
 import { LoginSchema } from '@/lib/validation/auth';
 import { Icons } from './icons';
@@ -17,6 +17,7 @@ import { toast } from './ui/use-toast';
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const LoginForm = ({ className, ...props }: UserAuthFormProps) => {
+    const searchParams = useSearchParams();
     const router = useRouter();
     const {
         register,
@@ -27,31 +28,36 @@ const LoginForm = ({ className, ...props }: UserAuthFormProps) => {
     });
 
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const onSubmit = async (data: LoginSchema) => {
         setIsLoading(true);
-        const res = await login(data);
-        if (res.error) {
-            setIsLoading(false);
-            toast({
+        const res = await signIn('credentials', {
+            redirect: false,
+            phone: data.phone,
+            password: data.password,
+            callbackUrl: searchParams?.get('from') || '/',
+        });
+        setIsLoading(false);
+
+        console.log(res);
+        if (!res?.ok) {
+            return toast({
                 title: 'Sign in failed',
-                description: res.error,
+                description:
+                    res?.status === 401
+                        ? 'Invalid credentials'
+                        : 'Something went wrong' + res?.status,
                 variant: 'destructive',
             });
-            return;
         }
 
-        if (res.data) {
-            const jwt = res.data.token;
-            window.localStorage.setItem('token', jwt);
-            setIsLoading(false);
-            toast({
-                title: 'Sign in successful',
-                description: 'Welcome back',
-                variant: 'default',
-            });
-            // router.push('/');
-        }
+        router.refresh();
+        return toast({
+            title: 'Sign in successful',
+            description: 'Welcome back',
+            variant: 'default',
+        });
     };
 
     return (
@@ -75,21 +81,35 @@ const LoginForm = ({ className, ...props }: UserAuthFormProps) => {
                                 {errors.phone.message}
                             </p>
                         )}
-                        <Label className="sr-only" htmlFor="password">
-                            Password
-                        </Label>
-                        <Input
-                            id="password"
-                            type="password"
-                            placeholder="Abcd@1234"
-                            disabled={isLoading}
-                            {...register('password')}
-                        />
-                        {errors?.password && (
-                            <p className="px-1 text-xs text-red-600">
-                                {errors.password.message}
-                            </p>
-                        )}
+                        <div className="relative">
+                            <Label className="sr-only" htmlFor="password">
+                                Password
+                            </Label>
+                            <Input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Abcd@1234"
+                                disabled={isLoading}
+                                {...register('password')}
+                            />
+                            {/* EYE toggle to show Password */}
+                            <div
+                                className="absolute top-0 bottom-0 right-0 flex items-center w-10 px-3 cursor-pointer text-muted-foreground"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <Icons.eyeOff />
+                                ) : (
+                                    <Icons.eye />
+                                )}
+                            </div>
+
+                            {errors?.password && (
+                                <p className="px-1 text-xs text-red-600">
+                                    {errors.password.message}
+                                </p>
+                            )}
+                        </div>
                     </div>
                     <button
                         className={cn(buttonVariants())}

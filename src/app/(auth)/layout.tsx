@@ -1,13 +1,18 @@
 import { Icons } from '@/components/icons';
 import { buttonVariants } from '@/components/ui/button';
+import { getCurrentUser } from '@/lib/auth/session';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 interface AuthLayoutProps {
     children: React.ReactNode;
 }
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+export default async function AuthLayout({ children }: AuthLayoutProps) {
+    const user = await getCurrentUser();
+    if (user) redirect('/');
+
     return (
         <div className="container flex flex-col items-center justify-center w-screen h-screen min-h-screen">
             <Link
